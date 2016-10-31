@@ -1,8 +1,8 @@
 from larlib import *
 
-"""The following function creates a stairs divided by a platform in two halves. All dimensions are parametric, based on the dimension of a containing box, given in input"""
+"""The following function creates a stairs divided by a platform in two halves. All dimensions are parametric, based on the dimension of a stair-containing box, given in input"""
 def ggpl_stairs_and_platform(dx,dy,dz):
-	
+
 	#get steps dimensions
 	stepX=dx/2
 	stepY=dy/8 #suppose the platform big long as four steps
@@ -49,8 +49,10 @@ def ggpl_stairs_and_platform(dx,dy,dz):
 	stairs=STRUCT([st,secondHalf])	
 	VIEW(stairs)
 
+"""this function calls the main method and lets the ggpl function start"""
 if __name__=='__main__':
-	ggpl_stairs_and_platform(0.8,0.7,0.22)
+	#insert any FLOAT value you want
+	ggpl_stairs_and_platform(50.0,50.0,50.0)
 
 
 	

@@ -1,5 +1,6 @@
 from pyplasm import *
 import math
+from ast import literal_eval
 
 """round values for vertex list"""
 def round_vertex(verts):
@@ -19,11 +20,13 @@ def create_dict(verts,cells):
 		key=",".join(str(x) for x in v)
 		if not key in dct.keys():
 			dct[key]=[i]
-			vertexList.append(v)
 		else: 
 			dct.get(key).append(i)
 		i+=1
-	
+
+	for key in dct.keys():
+		vertexList.append(literal_eval(key))
+
 	return dct , vertexList
 	
 """replaces the indexes of merged vertex, with the needed one"""
@@ -38,7 +41,7 @@ def replace_cell(dct,cells):
 				#checks if the tuple elemente is in the list of values and if True replaces the value with the key
 				if elT in vals:
 					index=cell.index(elT)
-					cell[index]=key
+					cell[index]=int(key)
 		
 
 """It receivs a poligon from the function produce_hpc_value() and creates the roof using vertex and cells"""
@@ -50,6 +53,7 @@ def ggpl_hip_roof():
 	
 	#rounds the vertex values
 	round_vertex(verts)
+
 	(vertexDict,vertexList)=create_dict(verts,cells)
 
 	#creates an helper dictionary for iterating on cells, using a counter as key
@@ -58,21 +62,59 @@ def ggpl_hip_roof():
 	for el in vertexDict.keys():
 		helperDict[count]=vertexDict.get(el)	
 		count+=1
-
+	
+	print cells
+	print('\n')
 	replace_cell(helperDict,cells)
 	
-	finalRoof=MKPOL([vertexList,cells,1])
-	skel=SKEL_1(finalRoof)	
-	VIEW(finalRoof)
+	finalRoof=MKPOL([vertexList,cells,None])
 
-	VIEW(OFFSET([.2,.2,.6])(skel))
+	skel1=SKEL_1(finalRoof)	
+	
+	#VIEW(finalRoof)
 
+	skel1=(OFFSET([.1,.1,.3])(skel1))
+	
+	"""print vertexDict
+	print ('\n')
+	print vertexList
+	print ('\n')
+	print helperDict
+	print ('\n')
+	print cells
+	print ('\n')"""
+	
+
+
+	coveringCells=put_planes(vertexList,cells)
+	coveringPol=MKPOL([vertexList,coveringCells,None])
+	#VIEW(coveringPol)
+	struct=STRUCT([skel1,COLOR(RED)(coveringPol)])
+	VIEW(struct)
+
+
+"""This function builds planes that will be put above the beams. It builds plane only for cells with at least one vertex having z!=0 """
+def put_planes(vertexList,cells):
+	#list of all vertex that satisfies condition and cells needed
+	ind=[]
+	buildingCells=[]
+	for v in vertexList:
+		if v[2]> 0.0:
+			i=vertexList.index(v)
+			ind.append(i+1)
+	
+	for index in ind:
+		for cell in cells:
+			if index in cell and not cell in buildingCells:
+				buildingCells.append(cell)
+	
+	return buildingCells
 
 
 """Produces the hpc value, input for the above function"""
 def produce_hpc_value():
 	verts=[[0,0,0],[0,5,0],[8,5,0],[8,0,0],[4,0,3],[4,5,3]]
-	cells=[[1,4,5],[2,6,3],[3,4,5,6],[1,2,5,6],[1,4,3,2]]
+	cells=[[1,4,5],[2,6,3],[3,4,5,6],[1,2,6,5],[1,4,3,2]]
 	pols=None
 	roof=MKPOL([verts,cells,pols])
 	return roof

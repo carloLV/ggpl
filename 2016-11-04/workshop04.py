@@ -45,9 +45,10 @@ def replace_cell(dct,cells):
 		
 
 """It receivs a poligon from the function produce_hpc_value() and creates the roof using vertex and cells"""
-def ggpl_hip_roof():
-	roof=produce_hpc_value()
+def ggpl_hip_roof(val):
+	roof=produce_hpc_value(val)
 	skel=SKEL_2(roof)
+
 	#gets all values from the skeleton
 	(verts,cells,pol)=UKPOL(skel)
 	
@@ -71,19 +72,20 @@ def ggpl_hip_roof():
 
 	skel1=SKEL_1(finalRoof)	
 	
-	VIEW(finalRoof)
-	VIEW(skel1)
+	#VIEW(finalRoof)
+	#VIEW(skel1)
 	skel1=(OFFSET([.1,.1,.3])(skel1))
 
 	coveringCells=put_planes(vertexList,cells)
 	coveringPol=MKPOL([vertexList,coveringCells,None])
 	
-	VIEW(coveringPol)
+	#VIEW(coveringPol)
 	struct=STRUCT([skel1,COLOR(RED)(coveringPol)])
-	#VIEW(struct)
+	VIEW(struct)
 
 
-"""This function builds planes that will be put above the beams. It builds plane only for cells with at least one vertex having z!=0 """
+"""This function builds planes that will be put above the beams. It builds plane only for cells with at least one vertex having z!=0. 
+    Moreover, according to the used models, we check if the vertex in cells have all the same x value. If true that cell isn't build"""
 def put_planes(vertexList,cells):
 	#list of all vertex that satisfies condition and cells needed
 	ind=[]
@@ -95,19 +97,41 @@ def put_planes(vertexList,cells):
 	
 	for index in ind:
 		for cell in cells:
-			if index in cell and not cell in buildingCells:
+			if index in cell and not check_x_value(cell,vertexList) and not cell in buildingCells:
 				buildingCells.append(cell)
 	
 	return buildingCells
 
-
+"""checks if all vertices in the given cell have the y value equals to 0"""
+def check_x_value(cell,vertexList):
+	check=False	
+	helpList=[]
+	for el in cell:
+		vert=vertexList[el-1]	
+		helpList.append(vert)
+	temp=helpList[0]
+	yValueTemp=temp[1]
+	for v in helpList:
+		if v[1]==yValueTemp:
+			check=True
+		else:
+			return False
+	return check
+				
 """Produces the hpc value, input for the above function"""
-def produce_hpc_value():
-	verts=[[0,0,0],[0,5,0],[8,5,0],[8,0,0],[4,0,3],[4,5,3]]
-	cells=[[1,4,5],[2,6,3],[3,4,5,6],[1,2,6,5],[1,4,3,2]]
+def produce_hpc_value(val):
+	verts1=[[0,0,0],[0,6,0],[8,6,0],[8,0,0],[4,1,3],[4,5,3]]
+	cells1=[[1,4,5],[2,6,3],[3,4,5,6],[1,2,6,5],[1,4,3,2]]
 	pols=None
-	roof=MKPOL([verts,cells,pols])
-	return roof
+	hip_roof=MKPOL([verts1,cells1,pols])
+	verts2=[[0,0,0],[2,0,3],[2,8,3],[0,8,0],[6,0,6],[6,8,6],[10,0,3],[10,8,3],[12,0,0],[12,8,0]]
+	cells2=[[1,2,3,4],[2,3,6,5],[5,6,8,7],[7,8,10,9],[1,4,9,10],[1,2,5,7,9],[3,4,6,8,10]]
+	gambrel_roof=MKPOL([verts2,cells2,pols])
+	if val==1:
+		return hip_roof
+	elif val==2:
+		return gambrel_roof
 
 if __name__=='__main__':
-	ggpl_hip_roof()
+	ggpl_hip_roof(1)
+	ggpl_hip_roof(2)

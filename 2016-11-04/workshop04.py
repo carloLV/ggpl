@@ -63,34 +63,24 @@ def ggpl_hip_roof():
 		helperDict[count]=vertexDict.get(el)	
 		count+=1
 	
-	print cells
-	print('\n')
 	replace_cell(helperDict,cells)
 	
 	finalRoof=MKPOL([vertexList,cells,None])
 
+	
+
 	skel1=SKEL_1(finalRoof)	
 	
-	#VIEW(finalRoof)
-
+	VIEW(finalRoof)
+	VIEW(skel1)
 	skel1=(OFFSET([.1,.1,.3])(skel1))
-	
-	"""print vertexDict
-	print ('\n')
-	print vertexList
-	print ('\n')
-	print helperDict
-	print ('\n')
-	print cells
-	print ('\n')"""
-	
-
 
 	coveringCells=put_planes(vertexList,cells)
 	coveringPol=MKPOL([vertexList,coveringCells,None])
-	#VIEW(coveringPol)
+	
+	VIEW(coveringPol)
 	struct=STRUCT([skel1,COLOR(RED)(coveringPol)])
-	VIEW(struct)
+	#VIEW(struct)
 
 
 """This function builds planes that will be put above the beams. It builds plane only for cells with at least one vertex having z!=0 """

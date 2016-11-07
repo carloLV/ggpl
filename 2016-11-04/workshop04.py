@@ -45,7 +45,7 @@ def replace_cell(dct,cells):
 		
 
 """It receivs a poligon from the function produce_hpc_value() and creates the roof using vertex and cells"""
-def ggpl_hip_roof(val):
+def ggpl_build_roof(val):
 	roof=produce_hpc_value(val)
 	skel=SKEL_2(roof)
 
@@ -97,13 +97,13 @@ def put_planes(vertexList,cells):
 	
 	for index in ind:
 		for cell in cells:
-			if index in cell and not check_x_value(cell,vertexList) and not cell in buildingCells:
+			if index in cell and not check_y_value(cell,vertexList) and not cell in buildingCells:
 				buildingCells.append(cell)
 	
 	return buildingCells
 
 """checks if all vertices in the given cell have the y value equals to 0"""
-def check_x_value(cell,vertexList):
+def check_y_value(cell,vertexList):
 	check=False	
 	helpList=[]
 	for el in cell:
@@ -111,8 +111,9 @@ def check_x_value(cell,vertexList):
 		helpList.append(vert)
 	temp=helpList[0]
 	yValueTemp=temp[1]
+	xValueTemp=temp[0] #if the input hpc value has a different axes'orientation
 	for v in helpList:
-		if v[1]==yValueTemp:
+		if v[1]==yValueTemp or v[0]==xValueTemp:
 			check=True
 		else:
 			return False
@@ -127,11 +128,18 @@ def produce_hpc_value(val):
 	verts2=[[0,0,0],[2,0,3],[2,8,3],[0,8,0],[6,0,6],[6,8,6],[10,0,3],[10,8,3],[12,0,0],[12,8,0]]
 	cells2=[[1,2,3,4],[2,3,6,5],[5,6,8,7],[7,8,10,9],[1,4,9,10],[1,2,5,7,9],[3,4,6,8,10]]
 	gambrel_roof=MKPOL([verts2,cells2,pols])
+
+	VIEW(hip_roof)
+	VIEW(gambrel_roof)
+	
+	### Following this examplas,add your polygon model in this section and ###
+	### update the if statement to let the program execute it              ###
+	
 	if val==1:
 		return hip_roof
 	elif val==2:
 		return gambrel_roof
 
 if __name__=='__main__':
-	ggpl_hip_roof(1)
-	ggpl_hip_roof(2)
+	ggpl_build_roof(1)
+	ggpl_build_roof(2)

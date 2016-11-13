@@ -129,8 +129,6 @@ def produce_hpc_value(val):
 	cells2=[[1,2,3,4],[2,3,6,5],[5,6,8,7],[7,8,10,9],[1,4,9,10],[1,2,5,7,9],[3,4,6,8,10]]
 	gambrel_roof=MKPOL([verts2,cells2,pols])
 
-	VIEW(hip_roof)
-	VIEW(gambrel_roof)
 	
 	### Following this examplas,add your polygon model in this section and ###
 	### update the if statement to let the program execute it              ###

@@ -49,7 +49,7 @@ def ggpl_door(x,y,b):
 		s = COLOR(Color4f([102/255.0,51/255.0,0/255.0,1]))(s)	
 		hx=sum(x)/10
 		hy=sum(y)/42
-		dimX=sum(x[1:])
+		dimX=sum(x[2:])+x[0]*3/2
 		handle = CUBOID([hx,hy,dz+dz/2])
 		handle=T([1,2])([dimX,sum(y)/2])(handle)
 		
@@ -71,9 +71,9 @@ if __name__=='__main__':
 	x2=[.06,.07,.12,.09,.06]
 	y2=[.15,.15,.15,.15,.15,.15,.15]
 	b2=[[1,1,1,1,1],[1,1,0,0,1],[1,1,1,1,1],[1,0,0,1,1],[1,1,1,1,1],[1,1,0,0,1],[1,1,1,1,1]]
-	#ggpl_window(x,y,b)(.8,.8,.1)
-	#ggpl_window(x1,y1,b1)(1.8,2,.1)
-	#ggpl_window(x1,y1,b1)(1.8,4,.3)
+	ggpl_window(x,y,b)(.8,.8,.1)
+	ggpl_window(x1,y1,b1)(1.8,2,.1)
+	ggpl_window(x1,y1,b1)(1.8,4,.3)
 	ggpl_door(x2,y2,b2)(1.8,2,.1)
 	
 

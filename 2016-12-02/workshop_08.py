@@ -28,7 +28,6 @@ def make_holes(fileName):
 				holes.append(MKPOL([basePol,[[1,2,3,4]],None]))
 				basePol = []
 				cont = 0
-		#building 3D "wanna-be" holes
 	holes = STRUCT(holes)
 	return holes
 	

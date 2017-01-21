@@ -62,7 +62,7 @@ def ggpl_build_house(ext,intr,door,windw):
 	windows = make_holes(windw)
 	windows = PROD([windows, Q(2/xfactor)])
 	windows = T(3)(SIZE([3])(walls)[0]/4.)(windows)
-	
+
 	#applying holes to structure using DIFFERENCE
 	internals = DIFFERENCE([internals,doors])
 	walls = DIFFERENCE([walls,doors,windows])
@@ -78,6 +78,6 @@ def ggpl_build_house(ext,intr,door,windw):
 
 if __name__=='__main__':
 	house = ggpl_build_house("external","internal","doors","window")
-	#house2 = ggpl_build_house("external2","internal2","doors2","winodws2")
+	#house2 = ggpl_build_house("external2","internal2","doors2","windows2")
 	VIEW(house)
 	#VIEW(house2)

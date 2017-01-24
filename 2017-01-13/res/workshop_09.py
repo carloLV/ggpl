@@ -10,7 +10,7 @@ from itertools import *
    @params: a .lines file
    @return: a list representing all points of the shape"""
 def generate_2D_vertecesList(fileName):
-	with open(fileName + ".lines", "rb") as file:
+	with open("lines_file/" + fileName + ".lines", "rb") as file:
 		reader = csv.reader(file, delimiter=",")
 		vertexList = []
 		for line in reader:
@@ -158,6 +158,7 @@ def ggpl_build_roof(filename):
 		pol.append(POLYLINE([verteces[j],verteces[j+1]]))
 		j+=2
 	pol = STRUCT(pol)
+	infPlane = SOLIDIFY(pol)	
 	#this is the list for top part of the roof
 	top_verteces = []
 	for i in range(len(verteces)):
@@ -189,10 +190,11 @@ def ggpl_build_roof(filename):
 		lateralPlanes.append(MKPOL([[verteces[s],verteces[s+1],top_verteces[s],top_verteces[s+1]],[[1,2,3,4]],None]))
 		s += 1
 	lateralPlanes = STRUCT(lateralPlanes)
-	completeRoof = STRUCT([lateralPlanes,plane])
-	completeRoof = TEXTURE("texture/tegole3.png")(completeRoof)
+	completeRoof = STRUCT([infPlane,lateralPlanes,plane])
+
+	xTrasl,yTrasl = centroid
+	completeRoof = T([1,2])([xTrasl,yTrasl])(completeRoof)
 	
-	VIEW(completeRoof)
 	return completeRoof
 
 if __name__=='__main__':

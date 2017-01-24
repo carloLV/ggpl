@@ -55,9 +55,14 @@ def ggpl_door(x,y,b):
 				sumY=sum(y[:j])
 				if b[j][i]==1:
 					cube=CUBOID([x[i],y[j],dy])
+					cube = COLOR(Color4f([102/255.0,51/255.0,0/255.0,1]))(cube)
 					s=STRUCT([s,T([1,2])([sumX,sumY])(cube)])
-		s = COLOR(Color4f([102/255.0,51/255.0,0/255.0,1]))(s)	
-		"""hx=sum(x)/10
+				else:
+					cube = CUBOID([x[i],y[j],dy])
+					cube = COLOR(Color4f([65/255.0,105/255.0,105/255.0,1]))(cube) 
+					s=STRUCT([s,T([1,2])([sumX,sumY])(cube)])
+	
+		hx=sum(x)/10
 		hy=sum(y)/42
 		dimX=sum(x[2:])+x[0]*3/2
 		handle = CUBOID([hx,hy,dz+dz/2])
@@ -82,7 +87,7 @@ def ggpl_door(x,y,b):
 		lockReverse = TEXTURE(["Texture/gold_texture.jpg"])(lockReverse)
 		lockReverse = R([1,2])(-PI/2)(lockReverse)
 		lockReverse = R([1,2])(PI)(lockReverse)
-		door = STRUCT([door,T([1,2,3])([dx-0.015,-0.01,dz/2.5]),lockReverse])
+		door = STRUCT([door,T([1,2,3])([dx-0.015,-0.01,dz/2.5]),lockReverse])"""
 		s=R([2,3])(PI/2)(s)		
 		return s
 	return ggpl_aux

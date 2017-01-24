@@ -1,5 +1,7 @@
 from larlib import *
 import workshop_7 as w7
+import workshop_09 as w9
+import workshop_03 as w3
 import csv
 
 
@@ -12,6 +14,48 @@ def generate_2D_walls(fileName):
 			polygonLines.append(POLYLINE([[float(line[0]), float(line[1])],[float(line[2]), float(line[3])]]))
 	wall = STRUCT(polygonLines)
 	return wall
+
+"""This function calculates the right values to traslate the house and the roof in the same point.
+   
+   @params: filename of external walls
+   @return: traslation's values
+"""
+def calculate_traslate_factor(fileName):
+	xTrasl = 0
+	yTrasl = 0
+	with open("lines_file/" + fileName +  ".lines", "rb") as file:
+		reader = csv.reader(file, delimiter=",")
+		for line in reader:
+			
+			"""p1 = [float(line[0]), float(line[1])]
+			p2 = [float(line[2]), float(line[3])]
+			dist = w9.distance(p1,p2)
+			if round(p1[0],1) == round(p2[0],1) and yTrasl < dist:
+				yTrasl = p1[1]
+				xTrasl = p2[0]
+			if round(p1[1],1) == round(p2[1],1) and xTrasl < dist:
+				xTrasl = p1[0]
+				yTrasl = p2[1]
+			
+			if xTrasl<float(line[0]):
+				xTrasl = float(line[0])
+			elif xTrasl<float(line[2]):
+				xTrasl = float(line[2])
+			if yTrasl<float(line[1]):
+				yTrasl = float(line[1])
+			elif yTrasl<float(line[3]):
+				yTrasl = float(line[3])
+			"""	
+		if float(line[0]) > float(line[2]):
+			xTrasl= float(line[0])
+			yTrasl= float(line[1])
+		else: 
+			xTrasl = float(line[2])
+			yTrasl= float(line[3])
+	return xTrasl,yTrasl
+				
+		
+
 
 """This functions reads a .line file and creates all spaces in wall in which a door will be placed. Then it creates the Hpc models
    that will be placed in the created holes. The input is necessary for adequaty scaling the models. 
@@ -103,10 +147,10 @@ def make_windows(xFactor,yFactor):
 				window = CUBOID([0,0,0])
 				cont = 0
 				if (xDim < yDim):
-					window = w7.ggpl_window(xWin,yWin,bWin)(yDim*yFactor,.2,1.5)
+					window = w7.ggpl_window(xWin,yWin,bWin)(yDim*yFactor,.6,1.5)
 					window = R([1,2])(-PI/2)(window)
 				else:
-					window = w7.ggpl_window(xWin,yWin,bWin)(xDim*xFactor,.2,1.5)
+					window = w7.ggpl_window(xWin,yWin,bWin)(xDim*xFactor,.6,1.5)
 					window = T(2)(-0.2)(window)
 				window = T([1,2,3])([float(line[0])*xFactor, float(line[1])*yFactor,1])(window)
 				createdWindows.append(window)
@@ -163,41 +207,13 @@ def make_external_doors(xFactor, yFactor):
 
 	holes = STRUCT(holes)
 	
-	return doors,holes
+	stair = w3.ggpl_stair(4.,3.,3.5)
+	stair = T([1,2])([float(line[0]) * xFactor-4.5, float(line[1]) * yFactor])(stair)	
+	stair= TEXTURE("texture/bricks.jpg")(stair)
 	
-
 	
+	return (doors,holes,stair)
 
-"""Builds stairs for this type of house"""
-def ggpl_stairs_and_platform(dx,dy,dz):
-
-	#get steps dimensions
-	stepX=dx/2
-	stepY=dy/10 #suppose the platform big long as four steps
-	stepZ=dz/15
-
-	#counter for height and distance
-	countH=stepZ
-	countD=stepY
-	#building single step
-	step=CUBOID([stepX,stepY,stepZ])
-	
-	st=step
-	#cycle for creating first group of stairs
-	while countH<(stepZ*14):
-		add_step=T(2)(countD)(step)
-		countD+=stepY
-		st=STRUCT([st,T(3)(countH),add_step])
-		countH+=stepZ
-
-	# creating the platform and using T transform
-	platform=CUBOID([dx,4*stepY,stepZ])
-	platform=T(2)(countD)(platform)
-	
-	#adding platform to struct
-	st=STRUCT([st,T(3)(countH),platform])
-
-	return st
 
 """using the functions previous created, here it is computated the entire structure.
    It takes in input the files .lines needed for computation in this order: external_walls, internal_walls, doors, windows"""
@@ -215,7 +231,7 @@ def ggpl_build_house(ext,intr,door,windw):
 	external = S([1,2])([xfactor,yfactor])(external)
 	floor = SOLIDIFY(external)
 	walls = OFFSET([.2,.2])(external)
-	walls = PROD([walls, Q(3.5)])
+	walls = PROD([walls, Q(3.5)]) 	
 
 	#generating internal 2D-walls
 	internal = generate_2D_walls(intr)
@@ -236,7 +252,7 @@ def ggpl_build_house(ext,intr,door,windw):
 	wHoles = PROD([wHoles,Q(1.5)])
 	wHoles = T(3)(1)(wHoles)
 
-	(extDoors,extHoles)=make_external_doors(xfactor,yfactor)
+	(extDoors,extHoles,stairs)=make_external_doors(xfactor,yfactor)
 	extHoles = OFFSET([0,.15])(extHoles)
 	extHoles = PROD([extHoles,Q(2.5)])
 
@@ -245,22 +261,38 @@ def ggpl_build_house(ext,intr,door,windw):
 	internals = STRUCT([internals,doors])
 	walls = DIFFERENCE([walls,extHoles])
 	walls = DIFFERENCE([walls,wHoles])
+	walls = COLOR(Color4f([102/255., 255/255., 102/255., 1]))(walls)
 	walls = STRUCT([walls,windows,extDoors])
 
 	house = STRUCT([walls,internals])
 	floor = TEXTURE("texture/floor.jpg")(floor)
 
-	stairs = ggpl_stairs_and_platform(3.,3.,3.)
+	"""
+	stairs = w3.ggpl_stair(4.,3.,3.5)
 	stairs = TEXTURE("bricks.jpg")(stairs)
-	stairs = T([1,2])([1,2])(stairs)
+	stair = w_03.ggpl_single_stair(8.,6.,3.5)
+	stair = R([1,2])(PI)(stair)
+	stair = T([1,2])([float(row[0]) * xScale+2.5, float(row[1]) * yScale+6])(stair)	
+	#stairs = T([1,2])([1,2])(stairs)
+	"""
 	
-	house= TEXTURE("texture/bricks.jpg")(house)
+	#calculating traslation factors
+	xTrasl,yTrasl =  calculate_traslate_factor(ext)
+	
 	house = STRUCT([house,floor])
+	#house = T([1,2])([-xTrasl,-yTrasl])(house)
 
-	secondFloor = T(3)(3)(house)
+	secondFloor = T(3)(3.5)(house)
 
-	struct = STRUCT([house,stairs,secondFloor])
-	VIEW(struct)
+	roof = w9.ggpl_build_roof(ext)
+	#roof = T([1,2])([xTrasl,yTrasl])(roof)
+	roof =  S([1,2,3])([xfactor,yfactor,zfactor])(roof)
+	roof = T(3)(7)(roof)
+	roof = TEXTURE("texture/tegole3.png")(roof)
+		
+	struct = STRUCT([house,stairs,secondFloor,roof])
+	
+	#VIEW(struct)
 	return struct
 
 

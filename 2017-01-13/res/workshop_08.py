@@ -170,8 +170,7 @@ def make_external_doors(xFactor, yFactor, porteEsterne):
 	stair = w3.ggpl_stair(4.,3.,3.5)
 	stair = T([1,2])([float(line[0]) * xFactor-4.5, float(line[1]) * yFactor])(stair)	
 	stair= TEXTURE("texture/bricks.jpg")(stair)
-	
-	
+
 	return (doors,holes,stair)
 
 
@@ -231,6 +230,7 @@ def ggpl_build_house(folder):
 	walls = STRUCT([walls,windows,extDoors])
 
 	house = STRUCT([walls,internals])
+	
 	floor = TEXTURE("texture/floor.jpg")(floor)
 	
 	house = STRUCT([house,floor])
@@ -241,7 +241,7 @@ def ggpl_build_house(folder):
 	roof =  S([1,2,3])([xfactor,yfactor,zfactor])(roof)
 	roof = T(3)(7)(roof)
 	roof = TEXTURE("texture/tegole3.png")(roof)
-		
+	
 	struct = STRUCT([house,stairs,secondFloor,roof])
 	
 	return struct

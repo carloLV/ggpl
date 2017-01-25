@@ -6,8 +6,8 @@ import csv
 
 
 """This function generates a 2D model based on a .lines file. """
-def generate_2D_walls(fileName):
-	with open("lines_file/" + fileName +  ".lines", "rb") as file:
+def generate_2D_walls(walls):
+	with open(walls +  ".lines", "rb") as file:
 		reader = csv.reader(file, delimiter=",")
 		polygonLines = []
 		for line in reader:
@@ -15,46 +15,6 @@ def generate_2D_walls(fileName):
 	wall = STRUCT(polygonLines)
 	return wall
 
-"""This function calculates the right values to traslate the house and the roof in the same point.
-   
-   @params: filename of external walls
-   @return: traslation's values
-"""
-def calculate_traslate_factor(fileName):
-	xTrasl = 0
-	yTrasl = 0
-	with open("lines_file/" + fileName +  ".lines", "rb") as file:
-		reader = csv.reader(file, delimiter=",")
-		for line in reader:
-			
-			"""p1 = [float(line[0]), float(line[1])]
-			p2 = [float(line[2]), float(line[3])]
-			dist = w9.distance(p1,p2)
-			if round(p1[0],1) == round(p2[0],1) and yTrasl < dist:
-				yTrasl = p1[1]
-				xTrasl = p2[0]
-			if round(p1[1],1) == round(p2[1],1) and xTrasl < dist:
-				xTrasl = p1[0]
-				yTrasl = p2[1]
-			
-			if xTrasl<float(line[0]):
-				xTrasl = float(line[0])
-			elif xTrasl<float(line[2]):
-				xTrasl = float(line[2])
-			if yTrasl<float(line[1]):
-				yTrasl = float(line[1])
-			elif yTrasl<float(line[3]):
-				yTrasl = float(line[3])
-			"""	
-		if float(line[0]) > float(line[2]):
-			xTrasl= float(line[0])
-			yTrasl= float(line[1])
-		else: 
-			xTrasl = float(line[2])
-			yTrasl= float(line[3])
-	return xTrasl,yTrasl
-				
-		
 
 
 """This functions reads a .line file and creates all spaces in wall in which a door will be placed. Then it creates the Hpc models
@@ -62,7 +22,7 @@ def calculate_traslate_factor(fileName):
    It return 2 STRUCT: one for holes and one for doors
 	@params: xFactor, yFactor
 	@return (doors,holes)"""
-def make_doors(xFactor,yFactor):
+def make_doors(xFactor,yFactor,door):
 
 	
 	#@param for doors
@@ -70,7 +30,7 @@ def make_doors(xFactor,yFactor):
 	yDo=[.15,.15,.15,.15,.15,.15,.15]
 	bDo=[[1,1,1,1,1],[1,1,0,0,1],[1,1,1,1,1],[1,0,0,1,1],[1,1,1,1,1],[1,1,0,0,1],[1,1,1,1,1]]
 
-	with open("lines_file/" + 'porte' + ".lines", "rb") as csvFile:
+	with open(door+ ".lines", "rb") as csvFile:
 		reader = csv.reader(csvFile, delimiter=",")
 		holes = []
 		basePol = []
@@ -115,7 +75,7 @@ def make_doors(xFactor,yFactor):
    It return 2 STRUCT: one for holes and one for windows
 	@params: xFactor, yFactor
 	@return (windows,holes)"""
-def make_windows(xFactor,yFactor):
+def make_windows(xFactor,yFactor,windw):
 	
 	#@param for building windows
 	xWin=[.05,.7,.05,.7,.05]
@@ -123,7 +83,7 @@ def make_windows(xFactor,yFactor):
 	bWin=[[1,1,1,1,1],[1,0,1,0,1],[1,1,1,1,1],[1,0,1,0,1],[1,1,1,1,1]]
 
 	
-	with open("lines_file/" + 'finestre' + ".lines", "rb") as csvFile:
+	with open(windw + ".lines", "rb") as csvFile:
 		reader = csv.reader(csvFile, delimiter=",")
 		holes = []
 		basePol = []
@@ -164,13 +124,13 @@ def make_windows(xFactor,yFactor):
 
 
 """This is the analog function of make_doors; it is used for external doors. """
-def make_external_doors(xFactor, yFactor):
+def make_external_doors(xFactor, yFactor, porteEsterne):
 	#@param for doors
 	xDo=[.06,.07,.12,.09,.06]
 	yDo=[.15,.15,.15,.15,.15,.15,.15]
 	bDo=[[1,1,1,1,1],[1,1,0,0,1],[1,1,1,1,1],[1,0,0,1,1],[1,1,1,1,1],[1,1,0,0,1],[1,1,1,1,1]]
 
-	with open("lines_file/" + 'porte_esterne' + ".lines", "rb") as csvFile:
+	with open(porteEsterne + ".lines", "rb") as csvFile:
 		reader = csv.reader(csvFile, delimiter=",")
 		holes = []
 		basePol = []
@@ -217,7 +177,13 @@ def make_external_doors(xFactor, yFactor):
 
 """using the functions previous created, here it is computated the entire structure.
    It takes in input the files .lines needed for computation in this order: external_walls, internal_walls, doors, windows"""
-def ggpl_build_house(ext,intr,door,windw):
+def ggpl_build_house(folder):
+
+	porteEsterne = folder + 'porte_esterne'
+	windw = folder + 'finestre'
+	ext = folder + 'muri_esterni' 
+	door = folder+ 'porte' 
+	intr = folder + 'muri_interni'
 
 	#generating 2D external walls
 	external = generate_2D_walls(ext)
@@ -242,17 +208,17 @@ def ggpl_build_house(ext,intr,door,windw):
 	internals = PROD([internals, Q(3)])
 
 	#producing Hpc values for polygons that will be holes in walls
-	(doors,dHoles)=make_doors(xfactor,yfactor)
+	(doors,dHoles)=make_doors(xfactor,yfactor,door)
 	dHoles = OFFSET([.2,.15])(dHoles)
 	dHoles = PROD([dHoles,Q(3)])
 	#doors = PROD([doors, Q(2/xfactor)])
 
-	(windows,wHoles) = make_windows(xfactor,yfactor)
+	(windows,wHoles) = make_windows(xfactor,yfactor,windw)
 	wHoles = OFFSET([0.15,0.15])(wHoles)
 	wHoles = PROD([wHoles,Q(1.5)])
 	wHoles = T(3)(1)(wHoles)
 
-	(extDoors,extHoles,stairs)=make_external_doors(xfactor,yfactor)
+	(extDoors,extHoles,stairs)=make_external_doors(xfactor,yfactor,porteEsterne)
 	extHoles = OFFSET([0,.15])(extHoles)
 	extHoles = PROD([extHoles,Q(2.5)])
 
@@ -261,38 +227,23 @@ def ggpl_build_house(ext,intr,door,windw):
 	internals = STRUCT([internals,doors])
 	walls = DIFFERENCE([walls,extHoles])
 	walls = DIFFERENCE([walls,wHoles])
-	walls = COLOR(Color4f([102/255., 255/255., 102/255., 1]))(walls)
+	walls = COLOR(Color4f([255/255., 255/255., 102/255., 1]))(walls)
 	walls = STRUCT([walls,windows,extDoors])
 
 	house = STRUCT([walls,internals])
 	floor = TEXTURE("texture/floor.jpg")(floor)
-
-	"""
-	stairs = w3.ggpl_stair(4.,3.,3.5)
-	stairs = TEXTURE("bricks.jpg")(stairs)
-	stair = w_03.ggpl_single_stair(8.,6.,3.5)
-	stair = R([1,2])(PI)(stair)
-	stair = T([1,2])([float(row[0]) * xScale+2.5, float(row[1]) * yScale+6])(stair)	
-	#stairs = T([1,2])([1,2])(stairs)
-	"""
-	
-	#calculating traslation factors
-	xTrasl,yTrasl =  calculate_traslate_factor(ext)
 	
 	house = STRUCT([house,floor])
-	#house = T([1,2])([-xTrasl,-yTrasl])(house)
 
 	secondFloor = T(3)(3.5)(house)
 
 	roof = w9.ggpl_build_roof(ext)
-	#roof = T([1,2])([xTrasl,yTrasl])(roof)
 	roof =  S([1,2,3])([xfactor,yfactor,zfactor])(roof)
 	roof = T(3)(7)(roof)
 	roof = TEXTURE("texture/tegole3.png")(roof)
 		
 	struct = STRUCT([house,stairs,secondFloor,roof])
 	
-	#VIEW(struct)
 	return struct
 
 

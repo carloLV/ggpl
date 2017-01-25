@@ -77,9 +77,18 @@ def ggpl_stair(dx,dy,dz):
 
 	# creating the platform and using T transform
 	platform=CUBOID([dx+dx/2,4*stepY,stepZ])
-	platform=T(2)(countD)(platform)
+	
+	#creating 
+	rHeight = stepZ*4
+	holder = CYLINDER([stepY/3,rHeight])(15)
+	holder = T(2)(4*stepY-stepY/3)(holder)
+	holder2 = T(1)(dx+dx/2-stepY/3)(holder)
+	handle = CUBOID([dx+dx/2,stepY/2,stepZ/2])	
+	handle = T([3,2])([rHeight,4*stepY-stepY/3])(handle)
+	platform = STRUCT([platform,holder,holder2,handle])
 	
 	#adding platform to struct
+	platform=T(2)(countD)(platform)
 	st=STRUCT([st,T(3)(countH),platform])
 
 	#VIEW(st)

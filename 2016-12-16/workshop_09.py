@@ -196,6 +196,5 @@ def ggpl_build_roof(filename):
 	return completeRoof
 
 if __name__=='__main__':
-	ggpl_build_roof("roof")
 	ggpl_build_roof("roof2")
-
+	

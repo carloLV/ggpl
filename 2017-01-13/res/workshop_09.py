@@ -10,7 +10,7 @@ from itertools import *
    @params: a .lines file
    @return: a list representing all points of the shape"""
 def generate_2D_vertecesList(fileName):
-	with open("lines_file/" + fileName + ".lines", "rb") as file:
+	with open( fileName + ".lines", "rb") as file:
 		reader = csv.reader(file, delimiter=",")
 		vertexList = []
 		for line in reader:

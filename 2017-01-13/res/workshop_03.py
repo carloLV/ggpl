@@ -72,8 +72,6 @@ def ggpl_stair(dx,dy,dz):
 		countH+=stepZ
 
 	secondHalf=st	
-	
-	# VIEW(st)
 
 	# creating the platform and using T transform
 	platform=CUBOID([dx+dx/2,4*stepY,stepZ])
@@ -90,8 +88,6 @@ def ggpl_stair(dx,dy,dz):
 	#adding platform to struct
 	platform=T(2)(countD)(platform)
 	st=STRUCT([st,T(3)(countH),platform])
-
-	#VIEW(st)
 	
 	countH+=stepZ
 
@@ -102,11 +98,8 @@ def ggpl_stair(dx,dy,dz):
 	secondHalf=T(2)(4*stepY)(secondHalf)		
 	secondHalf=T(3)(countH)(secondHalf)
 	countH = countH + 4*stepZ
-	
-	#VIEW(secondHalf)
 
 	stairs=STRUCT([st,secondHalf,T([2,3])([-countD-4*stepY,countH]),platform])	
-	#VIEW(stairs)
 	stairs=T(2)(4*stepY)(stairs)
 	return stairs
 

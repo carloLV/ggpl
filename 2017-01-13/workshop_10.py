@@ -11,10 +11,12 @@ from res import workshop_09 as w9
 def house_builder(folder):
 	#builds externals wall using previous function
 	walls = w8.ggpl_build_house(folder)
-	VIEW(walls)
+	return walls
+	#VIEW(walls)
 	
 
-	
+"""	
 if __name__ == '__main__':
 	
 	house_builder("lines_file/")
+"""

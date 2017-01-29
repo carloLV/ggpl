@@ -2,19 +2,8 @@ from pyplasm import *
 import csv
 from help import workshop_10 as w10
 from help import workshop_05 as w5
-from help import workshop_7 as w7
+#from help import workshop_7 as w7
 
-x1=[.05,1,.05,1,.05,1,.05]
-y1=[.05,.7,.1,.7,.05]
-b1=[[1,1,1,1,1,1,1],[1,0,1,0,1,0,1],[1,1,1,1,1,1,1],[1,0,1,0,1,0,1],[1,1,1,1,1,1,1]]
-	
-"""
-def village_builder():
-
-	c=MAP(BEZIERCURVE([[-0,0],[1,0],[1,1],[2,1],[3,1]]))(INTERVALS(1)(32))
-	return c
-
-"""
 def create_sign(h):
 	pillar = CYLINDER([.3,h])(20)
 	pillar = MATERIAL([.13,.13,.13,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(pillar)
@@ -34,9 +23,10 @@ def create_bench(r,h):
 	base = STRUCT([base,base2])
 	base = MATERIAL([0,0,.2,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(base)
 	sitting = CUBOID([r,wBase,.3])
-	back = 	CUBOID([r,.2,hBase*1.5])
-	sitting = STRUCT([sitting,back])
 	sitting = MATERIAL([.6,.3,0,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(sitting)	
+	back = 	CUBOID([r,.2,hBase*1.5])
+	back = MATERIAL([.63,.63,.63,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(back)
+	sitting = STRUCT([sitting,back])
 	sitting = T(3)(hBase)(sitting)	
 	bench = STRUCT([base,sitting])
 	return bench
@@ -67,13 +57,11 @@ def build_fountain(r,h):
 	tree = tree_creator(h)	
 	
 	basement = CYLINDER([r,hB])(20)
-	#basement = MATERIAL([.38,.38,.38,1,  0,0,0,1,  0,0,0,0, 0,0,0,1, 1])(basement)	
 	basement = MATERIAL([.13,.13,.13,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(basement)	
 	hole = CYLINDER([r2,hB/2])(20)
 	hole = T(3)(hB/2)(hole)
 	hole = MATERIAL([.2,.4,1,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(hole)
 	obelisk = CYLINDER([r/9,h-hB])(6)
-	#obelisk = T([1,2])([r,r])(obelisk)
 	obelisk = MATERIAL([.13,.13,.13,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(obelisk)
 	fountain = STRUCT([basement,hole,obelisk])
 	
@@ -163,9 +151,6 @@ def build_roads(pts):
 
 	stRet = TEXTURE("texture/asphalt.jpg")(stRet)
 	stRet = STRUCT([stRet,box])
-
-	#stRet = S([1,2,3])([xfactor,yfactor,zfactor])(stRet)
-
 	return stRet 						
 			
 
@@ -214,6 +199,5 @@ if __name__ == '__main__':
 	fountain = build_fountain(SIZE(1)(q1)/5,SIZE(3)(q1))
 	fountain = T([1,2])([fact1*3.5,fact2])(fountain)
 	st = STRUCT([le,table,q1,q2,q3,q4,fountain,wood,sign,game])
-	
 	VIEW(st)
 

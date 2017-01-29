@@ -4,6 +4,11 @@ from help import workshop_10 as w10
 from help import workshop_05 as w5
 #from help import workshop_7 as w7
 
+
+"""This function creates a sign and applies a defined texture to it.
+    @params: float h -> the height of buildings
+    @return: Hpc sign -> the model created
+"""
 def create_sign(h):
 	pillar = CYLINDER([.3,h])(20)
 	pillar = MATERIAL([.13,.13,.13,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(pillar)
@@ -12,6 +17,11 @@ def create_sign(h):
 	sign = STRUCT([pillar,T([1,3])([-h/2,h])(sign)])
 	return sign
 
+
+"""This function creates a bench and applies some color to it thanks to MATERIAL primitive.
+    @params: float r, float h ->  The length of bench andthe height of buildings.
+    @return: Hpc bench -> the model created
+"""
 def create_bench(r,h):
 	#bench's base dimensions
 	hBase = h/2
@@ -32,6 +42,11 @@ def create_bench(r,h):
 	return bench
 
 
+"""This function creates a trees assembling some basic models (cylinder and spheres);
+   then it applies some texture to the model.
+    @params: float h ->  The height of buildings.
+    @return: Hpc tree -> the model created
+"""
 def tree_creator(h):
 	leafs = SPHERE(0)([1,1])
 	r = h/15
@@ -49,7 +64,12 @@ def tree_creator(h):
 	return tree
 	
 
-
+"""This function creates a fountai sorrounded by some benches and trees. Then it applies some color to it thanks to MATERIAL primitive.
+   All dimensions are in relation to buildings dimensions; this lets a scaling on buildings to have consequences to all other models
+   created.
+    @params: float r, float h ->  The ray of fountain and the height of buildings.
+    @return: Hpc complete -> the model created
+"""
 def build_fountain(r,h):
 	r2 = r-r/7
 	hB= h/8
@@ -88,7 +108,12 @@ def build_fountain(r,h):
 	complete = STRUCT([fountain,treeSet,benches])
 	
 	return complete
-	
+
+
+"""This function creates a simple children game and applies some color to it using MATERIAL.
+    @params: float r ->  The ray of this game; also this input is in realtions to buildings dimensions.
+    @return: Hpc s -> the model created
+"""	
 def child_game(r):
 	base = CYLINDER([r,1])(16)
 	base = MATERIAL([.5,.5,.5,1,  0,0,0,1,  0,0,0,0, 0,0,0,0, 1])(base)	
@@ -104,7 +129,11 @@ def child_game(r):
 	return s
 	
 
-
+"""Next three functions creates groups of houses, using the function of workshop 10. To make a right shape of groups of buildings,
+   some necessary rotation an traslation are performed. Houses created are then improved with some trees.  
+    @params: None 
+    @return: Hpc houses -> the model created
+"""
 def build_nbood():
 	house = w10.house_builder('help/lines_file/')
 	tree = tree_creator(SIZE(3)(house))
@@ -134,6 +163,11 @@ def build_single_house():
 	return house
 	
 
+"""This function builds the streets, in relation to a set of points created on paper. It is used the primitive BEZIERCURVE to build
+   curves. Then, thanks to an appropriate OFFSET, the street is created and the use of a texture adds more realism to the model.
+    @params: list of list of points -> a list of points for each part of street.
+    @return: Hpc stRet -> the streets and the box in which are settled.
+"""
 def build_roads(pts):
 	stRet=STRUCT([CUBOID([0,0,0])])
 	for el in pts:
@@ -154,6 +188,12 @@ def build_roads(pts):
 	return stRet 						
 			
 
+"""This is the main function It builds all things using previous functions and performs some traslation and rotation to 
+   make a nice model. All parts are created and moved to the right position; at the end a STRUCT is performed and all the parts are 
+   put together in the final model
+    @params: None
+    @return: Hpc st -> the complete model created using all these functions
+"""
 if __name__ == '__main__':
 	
 	points = [[[60,0],[58,7.5],[60,15],[52,18],[46,21],[42,28],[40,32],[40,60],[40,80],[40,90]],
